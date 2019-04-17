@@ -1,0 +1,25 @@
+
+build {
+    doLast {
+        sourceSets*.java.srcDirs*.each { it.mkdirs() }
+        sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+    }
+}
+
+dependencies {
+    //compile
+//    compile ("com.google.guava:guava:18.0")
+//    compile ("com.madgag.spongycastle:core:1.51.0.0")
+//    compile ("org.slf4j:slf4j-api:1.7.25")
+//    compile ("net.jcip:jcip-annotations:1.0")
+//    compile ("com.google.guava:guava:27.0.1-jre")
+//    compile ("com.google.protobuf:protobuf-java:3.6.1")
+
+    compile ("io.netty:netty-all:${nettyVersion}")
+
+
+    //test compile
+    testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+    testCompile ("junit:junit:4.12")
+}
+

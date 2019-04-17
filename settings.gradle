@@ -1,6 +1,4 @@
 rootProject.name = 'bitcoin'
 
 include "protocol"
-include "message"
 include "network"
-include "common"
