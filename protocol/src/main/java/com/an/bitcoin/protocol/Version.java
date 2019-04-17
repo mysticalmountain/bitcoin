@@ -17,6 +17,8 @@ public class Version extends Message {
     private int version;
     private long service;
     private long timestamp;
+    private Address addrRecv;
+    public static final int LENGTH = 20;
 
     public Version(int version, long service, long timestamp) {
         this.version = version;
@@ -24,27 +26,29 @@ public class Version extends Message {
         this.timestamp = timestamp;
     }
 
-    public Version(byte [] payload) throws ProtocolException {
-//        Header header = new Header(buffer);
-//        super.setHeader(header);
-        parse(payload);
+    public Version(byte[] payload) throws ProtocolException {
+        Header header = new Header(payload);
+        super.header = header;
+        parse(payload, header.getHeaderLength());
     }
 
 
     @Override
-    public void parse(byte [] payload) throws ProtocolException {
-        this.version = (int) readUint32(payload, 0);
-        this.service = readInt64(payload, 0);
-        this.timestamp = readInt64(payload, 0);
+    public void parse(byte[] payload, int offset) throws ProtocolException {
+        this.version = (int) readUint32(payload, offset);
+        this.service = readInt64(payload, offset += LENGTH_4);
+        this.timestamp = readInt64(payload, offset += LENGTH_8);
+        addrRecv = new Address(payload, offset += LENGTH_8);
     }
 
     @Override
-    public byte [] doSerialize() throws ProtocolException {
+    public byte[] doSerialize() throws ProtocolException {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             uint32ToByteStream(version, stream);
             uint64ToByteStream(service, stream);
             uint64ToByteStream(timestamp, stream);
+            stream.write(addrRecv.serialize());
             return stream.toByteArray();
         } catch (Exception e) {
             throw new ProtocolException(e);
@@ -58,7 +62,11 @@ public class Version extends Message {
 
     @Override
     public int getLength() {
-        return 20;
+        if (addrRecv == null) {
+            throw new ProtocolException("Message serialize error sub message addrRecv is null");
+        }
+        return LENGTH + addrRecv.getLength();
+
     }
 
     @Override
@@ -72,6 +80,7 @@ public class Version extends Message {
                 "version=" + version +
                 ", service=" + service +
                 ", timestamp=" + timestamp +
+                ", addrRecv=" + addrRecv +
                 ", header=" + header +
                 '}';
     }
@@ -86,5 +95,13 @@ public class Version extends Message {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public Address getAddrRecv() {
+        return addrRecv;
+    }
+
+    public void setAddrRecv(Address addrRecv) {
+        this.addrRecv = addrRecv;
     }
 }

@@ -1,5 +1,7 @@
 package com.an.bitcoin.protocol;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,12 +17,18 @@ import java.nio.ByteBuffer;
  */
 public abstract class Message {
 
+    public static final int LENGTH_4 = 4;
+    public static final int LENGTH_8 = 8;
+    public static final int LENGTH_12 = 12;
+    public static final int LENGTH_16 = 16;
+    public static final String ASCII = "US-ASCII";
+
     protected Header header;
     protected byte [] payload;
 
-    public abstract void parse(byte [] payload) throws ProtocolException;
+    public abstract void parse(byte [] payload, int offset) throws ProtocolException;
 
-    protected abstract byte[] doSerialize() throws ProtocolException;
+    protected abstract byte[] doSerialize() throws IOException, ProtocolException;
 
     public abstract String getCommand();
 
@@ -29,6 +37,14 @@ public abstract class Message {
     public abstract int getChecksum();
 
     public byte[] serialize() throws ProtocolException {
+
+        if (this instanceof ChildMessage) {
+            try {
+                return doSerialize();
+            } catch (IOException e) {
+                throw new ProtocolException(e);
+            }
+        }
         if (header == null) {
             throw new ProtocolException("Message serialize error header is null");
         }

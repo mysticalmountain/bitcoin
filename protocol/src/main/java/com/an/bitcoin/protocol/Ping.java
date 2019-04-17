@@ -24,20 +24,18 @@ public class Ping extends Message {
 
     public Ping(long nonce, Header header) {
         this.nonce = nonce;
-        this.header = header;
+        super.header = header;
     }
 
     public Ping(byte [] payload) throws ProtocolException {
         Header header = new Header(payload);
-        this.header = header;
-        parse(payload);
+        super.header = header;
+        parse(payload, header.getHeaderLength());
     }
 
-
-
     @Override
-    public void parse(byte [] payload) throws ProtocolException {
-        nonce = readInt64(payload, header.getHeaderLength());
+    public void parse(byte[] payload, int offset) throws ProtocolException {
+        nonce = readInt64(payload, offset);
     }
 
     @Override

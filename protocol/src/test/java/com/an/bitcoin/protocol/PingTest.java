@@ -35,4 +35,14 @@ public class PingTest {
         out.println(ping + "\r\n" + ping1);
         Assert.assertEquals(ping.getNonce(), ping1.getNonce());
     }
+
+    @Test
+    public void tmp() {
+        int b = 5;
+        out.println(b += 5);
+    }
+
+    public void val(Integer a) {
+        a = 30;
+    }
 }
