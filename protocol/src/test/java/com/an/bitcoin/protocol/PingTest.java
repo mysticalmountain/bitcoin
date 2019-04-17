@@ -30,8 +30,8 @@ public class PingTest {
         Ping ping = new Ping(100);
         Message.Header header = new Message.Header(0x0709110B, ping.getCommand(), ping.getLength(), ping.getChecksum());
         ping.setHeader(header);
-        ByteBuffer buffer = ByteBuffer.wrap(ping.serialize());
-        Ping ping1 = new Ping(buffer);
+        byte [] pingBytes = ping.serialize();
+        Ping ping1 = new Ping(pingBytes);
         out.println(ping + "\r\n" + ping1);
         Assert.assertEquals(ping.getNonce(), ping1.getNonce());
     }

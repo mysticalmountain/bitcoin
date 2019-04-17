@@ -28,16 +28,20 @@ public class Ping extends Message {
     }
 
     public Ping(byte [] payload) throws ProtocolException {
+        Header header = new Header(payload);
+        this.header = header;
         parse(payload);
     }
 
+
+
     @Override
     public void parse(byte [] payload) throws ProtocolException {
-        nonce = readInt64(payload, 0);
+        nonce = readInt64(payload, header.getHeaderLength());
     }
 
     @Override
-    protected byte[] getBytes() throws ProtocolException {
+    protected byte[] doSerialize() throws ProtocolException {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             uint64ToByteStream(nonce, stream);

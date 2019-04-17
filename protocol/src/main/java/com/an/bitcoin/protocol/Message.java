@@ -20,7 +20,7 @@ public abstract class Message {
 
     public abstract void parse(byte [] payload) throws ProtocolException;
 
-    protected abstract byte[] getBytes() throws ProtocolException;
+    protected abstract byte[] doSerialize() throws ProtocolException;
 
     public abstract String getCommand();
 
@@ -36,9 +36,17 @@ public abstract class Message {
             byte [] headerBytes = header.serialize();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             stream.write(headerBytes);
-            stream.write(getBytes());
+
+            stream.write(doSerialize());
+
+            byte [] res = stream.toByteArray();
+            if (res.length != (getLength() + header.getHeaderLength())) {
+                throw new ProtocolException(String.format("Message serialize error expect length %d actual length %d", getLength() + header.getHeaderLength(), res.length));
+            }
             return stream.toByteArray();
-        } catch (Exception e) {
+        } catch (ProtocolException e) {
+            throw e;
+        } catch (IOException e) {
             throw new ProtocolException("Message serialize error unknown", e);
         }
     }
@@ -70,6 +78,7 @@ public abstract class Message {
         String command;
         int length;
         int checksum;
+        final int headerLength = 24;
 
         /**
          *
@@ -85,21 +94,15 @@ public abstract class Message {
             this.checksum = checksum;
         }
 
-        public Header(ByteBuffer buffer) throws ProtocolException {
+        public Header(byte [] payload) throws ProtocolException {
             try {
 //                seekPastMagicBytes(buffer);
-                byte[] magicBytes = new byte[4];
-                buffer.get(magicBytes);
-                magic = (int) readUint32(magicBytes, 0);
+                magic = (int) readUint32(payload, 0);
                 byte [] commandBytes =  new byte [12];
-                buffer.get(commandBytes);
+                System.arraycopy(payload, 4, commandBytes, 0, 12);
                 command = new String(commandBytes, "US-ASCII").trim();
-                byte [] lengthBytes = new byte[4];
-                buffer.get(lengthBytes);
-                length = (int) readUint32(lengthBytes, 0);
-                byte [] checksumBytes = new byte[4];
-                buffer.get(checksumBytes);
-                checksum = (int) readUint32(checksumBytes, 0);
+                length = (int) readUint32(payload, 16);
+                checksum = (int) readUint32(payload, 20);
             } catch (Exception e) {
                 throw new ProtocolException(e);
             }
@@ -137,7 +140,7 @@ public abstract class Message {
         }
 
         public int getHeaderLength() {
-            return 22;
+            return headerLength;
         }
 
         public void seekPastMagicBytes(ByteBuffer in) throws BufferUnderflowException {

@@ -18,7 +18,7 @@ public class Address extends ChildMessage {
 
 
     @Override
-    public void parse(ByteBuffer buffer) throws ProtocolException {
+    public void parse(byte [] payload) throws ProtocolException {
 
     }
 

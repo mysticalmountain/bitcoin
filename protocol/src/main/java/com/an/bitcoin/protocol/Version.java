@@ -24,28 +24,22 @@ public class Version extends Message {
         this.timestamp = timestamp;
     }
 
-    public Version(ByteBuffer buffer) throws ProtocolException {
-        Header header = new Header(buffer);
-        super.setHeader(header);
-        parse(buffer);
+    public Version(byte [] payload) throws ProtocolException {
+//        Header header = new Header(buffer);
+//        super.setHeader(header);
+        parse(payload);
     }
 
 
     @Override
-    public void parse(ByteBuffer buffer) throws ProtocolException {
-        byte [] versionBytes = new byte[4];
-        buffer.get(versionBytes);
-        this.version = (int) readUint32(versionBytes, 0);
-        byte [] serviceBytes = new byte[8];
-        buffer.get(serviceBytes);
-        this.service = readInt64(serviceBytes, 0);
-        byte [] timestampBytes = new byte[8];
-        buffer.get(timestampBytes);
-        this.timestamp = readInt64(timestampBytes, 0);
+    public void parse(byte [] payload) throws ProtocolException {
+        this.version = (int) readUint32(payload, 0);
+        this.service = readInt64(payload, 0);
+        this.timestamp = readInt64(payload, 0);
     }
 
     @Override
-    public byte [] getBytes() throws ProtocolException {
+    public byte [] doSerialize() throws ProtocolException {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             uint32ToByteStream(version, stream);
