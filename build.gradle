@@ -1,0 +1,63 @@
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'maven'
+
+    group = 'an'
+    version = '1.0'
+
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        maven {
+            url "https://repo1.maven.org/maven2/"
+//            url "https://repository.jboss.org/maven2"
+//            url "http://maven.aliyun.com/nexus/content/groups/public"
+        }
+    }
+
+
+
+    buildscript {
+        ext {
+            nettyVersion = '4.0.34.Final'
+        }
+    }
+    task listJars {
+        doLast {
+            configurations.compile.each { File file -> println file.name }
+        }
+    }
+    task copyJars(type: Copy) {
+        from configurations.runtime
+        into 'build/libs'
+    }
+    /*
+    build {
+        doFirst {
+//            println("do first")
+        }
+        doLast {
+//            println("do last")
+            copy {
+                from configurations.runtime
+                into 'build/libs'
+            }
+            copy {
+                from 'server.sh'
+                into 'build'
+            }
+//            def logDir = new File(project.getProjectDir().getAbsolutePath() + "/build/logs")
+//            if (!logDir.exists()) {
+//                logDir.mkdirs()
+//            }
+        }
+    }
+    */
+//    build.dependsOn(makeJar)
+
+
+}
