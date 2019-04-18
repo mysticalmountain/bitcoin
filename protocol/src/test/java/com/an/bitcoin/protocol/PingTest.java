@@ -20,29 +20,15 @@ public class PingTest {
     @Test
     public void serialize() throws ProtocolException {
         Ping ping = new Ping(new Random().nextInt());
-        Message.Header header = new Message.Header(0x0709110B, ping.getCommand(), ping.getLength(), ping.getChecksum());
-        ping.setHeader(header);
         ping.serialize();
     }
 
     @Test
     public void deSerialize() {
         Ping ping = new Ping(100);
-        Message.Header header = new Message.Header(0x0709110B, ping.getCommand(), ping.getLength(), ping.getChecksum());
-        ping.setHeader(header);
         byte [] pingBytes = ping.serialize();
         Ping ping1 = new Ping(pingBytes);
         out.println(ping + "\r\n" + ping1);
         Assert.assertEquals(ping.getNonce(), ping1.getNonce());
-    }
-
-    @Test
-    public void tmp() {
-        int b = 5;
-        out.println(b += 5);
-    }
-
-    public void val(Integer a) {
-        a = 30;
     }
 }

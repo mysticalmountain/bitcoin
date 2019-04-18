@@ -13,29 +13,21 @@ import java.nio.ByteBuffer;
 public class Ping extends Message {
 
     private long nonce;
+    public static final int LENGTH = 8;
+
 
     public Ping(long nonce) {
         this.nonce = nonce;
     }
 
-    public Ping(Header header) {
-        this.header = header;
-    }
-
-    public Ping(long nonce, Header header) {
-        this.nonce = nonce;
-        super.header = header;
-    }
-
     public Ping(byte [] payload) throws ProtocolException {
-        Header header = new Header(payload);
-        super.header = header;
-        parse(payload, header.getHeaderLength());
+        super(payload);
+        parse();
     }
 
     @Override
-    public void parse(byte[] payload, int offset) throws ProtocolException {
-        nonce = readInt64(payload, offset);
+    public void parse() throws ProtocolException {
+        nonce = readInt64();
     }
 
     @Override

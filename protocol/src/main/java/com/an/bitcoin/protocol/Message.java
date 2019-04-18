@@ -1,7 +1,5 @@
 package com.an.bitcoin.protocol;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,8 +23,24 @@ public abstract class Message {
 
     protected Header header;
     protected byte [] payload;
+    public static final int MAX_SIZE = 0x02000000; // 32MB
+    protected int cursor;
 
-    public abstract void parse(byte [] payload, int offset) throws ProtocolException;
+    public Message() {}
+
+    public Message(byte [] payload) {
+        this.payload = payload;
+    }
+
+    public Message(byte [] payload, int cursor) {
+        this.payload = payload;
+        this.cursor = cursor;
+    }
+
+
+    public abstract void parse() throws ProtocolException;
+
+//    public abstract void parse(byte[] payload) throws ProtocolException;
 
     protected abstract byte[] doSerialize() throws IOException, ProtocolException;
 
@@ -45,19 +59,11 @@ public abstract class Message {
                 throw new ProtocolException(e);
             }
         }
-        if (header == null) {
-            throw new ProtocolException("Message serialize error header is null");
-        }
         try {
-            byte [] headerBytes = header.serialize();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            stream.write(headerBytes);
-
             stream.write(doSerialize());
-
-            byte [] res = stream.toByteArray();
-            if (res.length != (getLength() + header.getHeaderLength())) {
-                throw new ProtocolException(String.format("Message serialize error expect length %d actual length %d", getLength() + header.getHeaderLength(), res.length));
+            if (stream.size() != getLength()) {
+                throw new ProtocolException(String.format("Message serialize error expect length %d actual length %d", getLength(), stream.size()));
             }
             return stream.toByteArray();
         } catch (ProtocolException e) {
@@ -67,34 +73,16 @@ public abstract class Message {
         }
     }
 
-    public Message() {}
-
-    public Message(byte [] payload) {
-        this.payload = payload;
-    }
-
-    public Message(Header header) {
-        this.header = header;
-    }
-
-    public Header getHeader() {
-        return header;
-    }
-
-    public void setHeader(Header header) {
-        this.header = header;
-    }
-
     static class Header {
         //4	magic	uint32_t	Magic value indicating message origin network, and used to seek to next message when stream state is unknown
         //12	command	char[12]	ASCII string identifying the packet content, NULL padded (non-NULL padding results in packet rejected)
         //4	length	uint32_t	Length of payload in number of bytes
         //4	checksum	uint32_t	First 4 bytes of sha256(sha256(payload))
-        int magic;
-        String command;
-        int length;
-        int checksum;
-        final int headerLength = 24;
+        public int magic;
+        public String command;
+        public int length;
+        public int checksum;
+        public final int headerLength = 24;
 
         /**
          *
@@ -129,34 +117,18 @@ public abstract class Message {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 uint32ToByteStream(magic, stream);
                 byte [] commandBytes = new byte[12];
-                System.arraycopy(getCommand().getBytes(), 0, commandBytes, 0, getCommand().getBytes().length);
+                System.arraycopy(command.getBytes(), 0, commandBytes, 0, command.getBytes().length);
                 stream.write(commandBytes);
-                uint32ToByteStream(getLength(), stream);
+                uint32ToByteStream(length, stream);
                 uint32ToByteStream(checksum, stream);
+                byte[] res = stream.toByteArray();
+                if (res.length != headerLength) {
+                    throw new ProtocolException(String.format("Message header serialize error expect length %d actual length %d", headerLength, res.length));
+                }
                 return stream.toByteArray();
             } catch (Exception e) {
                 throw new ProtocolException(e);
             }
-        }
-
-        public int getMagic() {
-            return magic;
-        }
-
-        public String getCommand() {
-            return command;
-        }
-
-        public int getLength() {
-            return length;
-        }
-
-        public int getChecksum() {
-            return checksum;
-        }
-
-        public int getHeaderLength() {
-            return headerLength;
         }
 
         public void seekPastMagicBytes(ByteBuffer in) throws BufferUnderflowException {
@@ -220,5 +192,39 @@ public abstract class Message {
         stream.write((int) (0xFF & (value >> 40)));
         stream.write((int) (0xFF & (value >> 48)));
         stream.write((int) (0xFF & (value >> 56)));
+    }
+
+    protected byte[] readBytes(int length) throws ProtocolException {
+        if (length > MAX_SIZE) {
+            throw new ProtocolException("Claimed value length too large: " + length);
+        }
+        try {
+            byte[] b = new byte[length];
+            System.arraycopy(payload, cursor, b, 0, length);
+            cursor += length;
+            return b;
+        } catch (IndexOutOfBoundsException e) {
+            throw new ProtocolException(e);
+        }
+    }
+
+    protected long readUint32() throws ProtocolException {
+        try {
+            long u = readUint32(payload, cursor);
+            cursor += 4;
+            return u;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ProtocolException(e);
+        }
+    }
+
+    protected long readInt64() throws ProtocolException {
+        try {
+            long u = readInt64(payload, cursor);
+            cursor += 8;
+            return u;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ProtocolException(e);
+        }
     }
 }

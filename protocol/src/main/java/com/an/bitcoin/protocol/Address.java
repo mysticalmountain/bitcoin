@@ -22,9 +22,9 @@ public class Address extends ChildMessage {
 
     public Address() {}
 
-    public Address(byte[] payload, int offset) {
-        super(payload, offset);
-        parse(payload, offset);
+    public Address(byte[] payload) {
+        super(payload);
+        parse();
     }
 
     public Address(int time, int services, String ip, int port) {
@@ -36,7 +36,8 @@ public class Address extends ChildMessage {
 
 
     @Override
-    public void parse(byte[] payload, int offset) throws ProtocolException {
+    public void parse() throws ProtocolException {
+        int offset = 0;
         time = (int) readUint32(payload, offset);
         services = (int) readUint32(payload, offset += LENGTH_4);
         byte[] ipBytes = new byte[LENGTH_16];

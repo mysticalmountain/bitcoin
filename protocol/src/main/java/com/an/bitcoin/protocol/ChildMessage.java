@@ -11,13 +11,10 @@ import com.sun.istack.internal.Nullable;
  */
 public abstract class ChildMessage extends Message {
 
-    protected int offset;
-
     public ChildMessage() {}
 
-    public ChildMessage(byte [] payload, int offset) {
+    public ChildMessage(byte [] payload) {
         super(payload);
-        this.offset = offset;
     }
 
     @Nullable

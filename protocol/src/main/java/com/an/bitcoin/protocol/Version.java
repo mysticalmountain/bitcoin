@@ -20,6 +20,8 @@ public class Version extends Message {
     private Address addrRecv;
     public static final int LENGTH = 20;
 
+    public Version() {}
+
     public Version(int version, long service, long timestamp) {
         this.version = version;
         this.service = service;
@@ -27,18 +29,22 @@ public class Version extends Message {
     }
 
     public Version(byte[] payload) throws ProtocolException {
-        Header header = new Header(payload);
-        super.header = header;
-        parse(payload, header.getHeaderLength());
+        super(payload);
+        parse();
+    }
+
+    public Version(byte[] payload, int offset) throws ProtocolException {
+        super(payload);
+        parse();
     }
 
 
     @Override
-    public void parse(byte[] payload, int offset) throws ProtocolException {
-        this.version = (int) readUint32(payload, offset);
-        this.service = readInt64(payload, offset += LENGTH_4);
-        this.timestamp = readInt64(payload, offset += LENGTH_8);
-        addrRecv = new Address(payload, offset += LENGTH_8);
+    public void parse() throws ProtocolException {
+        this.version = (int) readUint32();
+        this.service = readInt64();
+        this.timestamp = readInt64();
+        addrRecv = new Address(readBytes(Address.LENGTH));
     }
 
     @Override

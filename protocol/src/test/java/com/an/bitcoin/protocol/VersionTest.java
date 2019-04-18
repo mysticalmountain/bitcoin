@@ -18,19 +18,10 @@ import static java.lang.System.out;
 public class VersionTest {
 
     @Test
-    public void print() {
-
-    }
-
-    @Test
     public void serialize() throws ProtocolException {
         Version version = new Version(1, 100, System.currentTimeMillis());
         Address address = new Address(1, 2, "3", 4);
         version.setAddrRecv(address);
-        Message.Header header = new Message.Header(0x0709110B, version.getCommand(), version.getLength(), version.getChecksum());
-        version.setHeader(header);
-
-        out.println(version);
         byte[] versionBytes = version.serialize();
     }
 
@@ -39,8 +30,6 @@ public class VersionTest {
         Version version = new Version(1, 100, System.currentTimeMillis());
         Address address = new Address(1, 2, "3", 4);
         version.setAddrRecv(address);
-        Message.Header header = new Message.Header(0x0709110B, version.getCommand(), version.getLength(), version.getChecksum());
-        version.setHeader(header);
         out.println(version);
         byte[] versionBytes = version.serialize();
         Version version1 = new Version(versionBytes);
@@ -51,5 +40,33 @@ public class VersionTest {
         Assert.assertEquals(version.getChecksum(), version1.getChecksum());
         Assert.assertEquals(version.getAddrRecv().getIp(), version1.getAddrRecv().getIp());
         Assert.assertEquals(version.getAddrRecv().getPort(), version1.getAddrRecv().getPort());
+    }
+
+    @Test
+    public void versionGt106Serialize() {
+        Version version = new Version(1, 100, System.currentTimeMillis());
+        Address addrRecv = new Address(1, 2, "3", 4);
+        version.setAddrRecv(addrRecv);
+        Address address = new Address(1, 2, "3", 4);
+        VersionGt106 versionGt106 = new VersionGt106(version, 98);
+        versionGt106.setAddrFrom(address);
+        versionGt106.serialize();
+
+    }
+
+    @Test
+    public void versionGt106Deserialize() {
+        Version version = new Version(1, 100, System.currentTimeMillis());
+        Address addrRecv = new Address(1, 2, "3", 4);
+        version.setAddrRecv(addrRecv);
+        Address address = new Address(1, 2, "3", 4);
+        VersionGt106 source = new VersionGt106(version, 98);
+        source.setAddrFrom(address);
+        byte [] versionBytes = source.serialize();
+        VersionGt106 target = new VersionGt106(versionBytes);
+        out.println(source);
+        out.println(target);
+        Assert.assertEquals(source.nonce, target.nonce);
+
     }
 }
