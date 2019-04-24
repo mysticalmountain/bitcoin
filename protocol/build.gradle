@@ -8,14 +8,9 @@ build {
 
 dependencies {
     //compile
-//    compile ("com.google.guava:guava:18.0")
-//    compile ("com.madgag.spongycastle:core:1.51.0.0")
-//    compile ("org.slf4j:slf4j-api:1.7.25")
-//    compile ("net.jcip:jcip-annotations:1.0")
-//    compile ("com.google.guava:guava:27.0.1-jre")
-//    compile ("com.google.protobuf:protobuf-java:3.6.1")
-
     compile ("io.netty:netty-all:${nettyVersion}")
+    compile("org.reflections:reflections:0.9.11")
+    compile("org.slf4j:slf4j-log4j12:1.7.25")
 
 
     //test compile
