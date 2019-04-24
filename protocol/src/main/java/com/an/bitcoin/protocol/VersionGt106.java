@@ -10,6 +10,7 @@ import java.io.IOException;
  * @Date 2019/4/18 上午9:09
  * @Version 1.0
  */
+@Command(name = "version")
 public class VersionGt106 extends MessageDecorator<Version> {
 
     public Address addrFrom;
@@ -58,6 +59,11 @@ public class VersionGt106 extends MessageDecorator<Version> {
         return 0;
     }
 
+    @Override
+    public boolean support(Header header) {
+        return getCommand().equals(header.command) && message.getVersion() > 106 &&  message.getVersion() < 70001;
+    }
+
     public Address getAddrFrom() {
         return addrFrom;
     }
@@ -81,6 +87,7 @@ public class VersionGt106 extends MessageDecorator<Version> {
     public void setVersion(Version version) {
         this.message = version;
     }
+
 
     @Override
     public String toString() {

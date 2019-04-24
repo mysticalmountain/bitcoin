@@ -30,5 +30,8 @@ public abstract class ChildMessage extends Message {
         return null;
     }
 
-
+    @Override
+    public boolean support(Header header) {
+        return false;
+    }
 }

@@ -2,6 +2,7 @@ package com.an.bitcoin.protocol;
 
 import java.io.IOException;
 
+@Command(name = "version")
 public class VersionGt70001 extends MessageDecorator<VersionGt106> {
 
 
@@ -39,5 +40,10 @@ public class VersionGt70001 extends MessageDecorator<VersionGt106> {
     @Override
     public int getChecksum() {
         return 0;
+    }
+
+    @Override
+    public boolean support(Header header) {
+        return getCommand().equals(header.command) && message.message.getVersion() > 70001;
     }
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
  * @Date 2019/4/18 下午9:19
  * @Version 1.0
  */
+@Command(name = "pong")
 public class Pong extends Message {
 
     private long nonce;
@@ -51,11 +52,24 @@ public class Pong extends Message {
         return 0;
     }
 
+    @Override
+    public boolean support(Header header) {
+        return getCommand().equals(header.command);
+    }
+
     public long getNonce() {
         return nonce;
     }
 
     public void setNonce(long nonce) {
         this.nonce = nonce;
+    }
+
+    @Override
+    public String toString() {
+        return "Pong{" +
+                "nonce=" + nonce +
+                ", header=" + header +
+                '}';
     }
 }

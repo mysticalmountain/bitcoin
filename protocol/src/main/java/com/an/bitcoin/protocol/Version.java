@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
  * @Date 2019/4/16 下午11:51
  * @Version 1.0
  */
+@Command(name = "version")
 public class Version extends Message {
 
     private int version;
@@ -78,6 +79,11 @@ public class Version extends Message {
     @Override
     public int getChecksum() {
         return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public boolean support(Header header) {
+        return getCommand().equals(header.command);
     }
 
     @Override

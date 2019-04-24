@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @ClassName Message
@@ -20,22 +22,28 @@ public abstract class Message {
     public static final int LENGTH_12 = 12;
     public static final int LENGTH_16 = 16;
     public static final String ASCII = "US-ASCII";
+    public static final int magic = 0x0709110B;
 
     protected Header header;
     protected byte [] payload;
     public static final int MAX_SIZE = 0x02000000; // 32MB
     protected int cursor;
 
-    public Message() {}
+    public Message() {
+        this(null);
+    }
 
     public Message(byte [] payload) {
-        this.payload = payload;
+        this(payload, 0);
     }
 
     public Message(byte [] payload, int cursor) {
         this.payload = payload;
         this.cursor = cursor;
+        messages.add(this.getClass());
     }
+
+    private List<Class> messages = new LinkedList<>();
 
 
     public abstract void parse() throws ProtocolException;
@@ -49,6 +57,8 @@ public abstract class Message {
     public abstract int getLength();
 
     public abstract int getChecksum();
+
+    public abstract boolean support(Header header);
 
     public byte[] serialize() throws ProtocolException {
 
@@ -73,11 +83,7 @@ public abstract class Message {
         }
     }
 
-    static class Header {
-        //4	magic	uint32_t	Magic value indicating message origin network, and used to seek to next message when stream state is unknown
-        //12	command	char[12]	ASCII string identifying the packet content, NULL padded (non-NULL padding results in packet rejected)
-        //4	length	uint32_t	Length of payload in number of bytes
-        //4	checksum	uint32_t	First 4 bytes of sha256(sha256(payload))
+    public static class Header {
         public int magic;
         public String command;
         public int length;
@@ -101,12 +107,12 @@ public abstract class Message {
         public Header(byte [] payload) throws ProtocolException {
             try {
 //                seekPastMagicBytes(buffer);
-                magic = (int) readUint32(payload, 0);
+//                magic = (int) readUint32(payload, 0);
                 byte [] commandBytes =  new byte [12];
-                System.arraycopy(payload, 4, commandBytes, 0, 12);
+                System.arraycopy(payload, 0, commandBytes, 0, 12);
                 command = new String(commandBytes, "US-ASCII").trim();
-                length = (int) readUint32(payload, 16);
-                checksum = (int) readUint32(payload, 20);
+                length = (int) readUint32(payload, 12);
+                checksum = (int) readUint32(payload, 16);
             } catch (Exception e) {
                 throw new ProtocolException(e);
             }
@@ -146,6 +152,14 @@ public abstract class Message {
 
         }
 
+        public int getHeaderLength() {
+            return headerLength;
+        }
+
+        public int getLength() {
+            return length;
+        }
+
         @Override
         public String toString() {
             return "Header{" +
@@ -157,6 +171,13 @@ public abstract class Message {
         }
     }
 
+    public Header getHeader() {
+        return header;
+    }
+
+    public void setHeader(Header header) {
+        this.header = header;
+    }
 
     public static long readUint32(byte[] bytes, int offset) {
         return (bytes[offset] & 0xffl) |

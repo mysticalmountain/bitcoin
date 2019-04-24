@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
  * @Date 2019/4/17 上午11:06
  * @Version 1.0
  */
+@Command(name = "ping")
 public class Ping extends Message {
 
     private long nonce;
@@ -54,6 +55,11 @@ public class Ping extends Message {
     @Override
     public int getChecksum() {
         return 0;
+    }
+
+    @Override
+    public boolean support(Header header) {
+        return getCommand().equals(header.command);
     }
 
     public long getNonce() {
