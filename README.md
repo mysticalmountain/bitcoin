@@ -16,29 +16,34 @@ P2P网络是bitcoin协议的通讯模型，基于bitcoin的公链性质，任何
 ### Message model
 ```
                    +-------+
-                   |Message| -----+-------+--------+
-                   +-------+      |       |        |
-                       |          |       |        |
-                       |          |       |        |
-                +------------+ +----+ +-------+ +-----+
-                |ChildMessage| |Ping| |Version| |Block|
-                +------------+ +----+ +-------+ +-----+
+                   |Message| -----+-------+--------+------+
+                   +-------+      |       |        |      |
+                       |          |       |        |      |
+                       |          |       |        |      |
+                +------------+ +----+ +-------+ +-----+ +---+
+                |ChildMessage| |Ping| |Version| |Block| |...|
+                +------------+ +----+ +-------+ +-----+ +---+
                        |
-      +----------------+------------------+
-      |                |                  |
-+-----------+ +----------------+ +-----------------+
-|Transaction| |TransactionInput| |TransactionOutput|
-+-----------+ +----------------+ +-----------------+
+      +----------------+------------------+------------+
+      |                |                  |            |
++-----------+ +----------------+ +-----------------+ +---+
+|Transaction| |TransactionInput| |TransactionOutput| |...|
++-----------+ +----------------+ +-----------------+ +---+
 ```
 
 + `Message`bitcoin协议报文的隐喻，我的协议实现的基类，规范了协议实现的模板。着重介绍2个方法`parse()`将二进制报文规范反序列化为Message Object， `serialize()`将Message Object序列化为可传输的二进制bit
 
-+ `Block`
++ `Block`实现[https://en.bitcoin.it/wiki/Protocol_documentation#block](https://en.bitcoin.it/wiki/Protocol_documentation#block)Block协议，实现了Merkle数root计算、工作量证明检查、Block Hash值计算、难度系数计算、挖矿等基本操作
 
-### Block
-### Transaction
-### Mining
-### Contract
++ `Transaction TransactionInput TransactionOutput TransactionOutPoint`实现[https://en.bitcoin.it/wiki/Protocol_documentation#tx](https://en.bitcoin.it/wiki/Protocol_documentation#tx)Tx协议，三个对象共同完成协议的组装机验证
 
+
+
+### Script and contract
+关于协议内容[https://en.bitcoin.it/wiki/Script](https://en.bitcoin.it/wiki/Script)是一个微型的变成语言，涉及流程控制、堆栈操作、逻辑算法、数据加密等，需要大量的编码，目前正在实现中。
+### Transaction Broadcast
+待实现
+### Block broadcast and block chain
+待实现
 
 # 参考资料
