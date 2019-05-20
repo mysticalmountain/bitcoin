@@ -22,7 +22,6 @@ public class Pong extends Message {
 
     public Pong(byte [] payload) {
         super(payload);
-        parse();
     }
 
     @Override

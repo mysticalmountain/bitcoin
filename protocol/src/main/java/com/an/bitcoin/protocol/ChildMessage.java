@@ -17,6 +17,10 @@ public abstract class ChildMessage extends Message {
         super(payload);
     }
 
+    public ChildMessage(byte [] payload, int cursor) {
+        super(payload, cursor);
+    }
+
     @Nullable
     protected Message parent;
 

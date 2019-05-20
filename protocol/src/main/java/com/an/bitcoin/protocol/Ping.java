@@ -23,7 +23,6 @@ public class Ping extends Message {
 
     public Ping(byte [] payload) throws ProtocolException {
         super(payload);
-        parse();
     }
 
     @Override

@@ -30,7 +30,7 @@ public abstract class Message {
     protected int cursor;
 
     public Message() {
-        this(null);
+
     }
 
     public Message(byte [] payload) {
@@ -41,6 +41,7 @@ public abstract class Message {
         this.payload = payload;
         this.cursor = cursor;
         messages.add(this.getClass());
+        parse();
     }
 
     private List<Class> messages = new LinkedList<>();
@@ -248,4 +249,19 @@ public abstract class Message {
             throw new ProtocolException(e);
         }
     }
+
+    protected long readVarInt() throws ProtocolException {
+        return readVarInt(0);
+    }
+
+    protected long readVarInt(int offset) throws ProtocolException {
+        try {
+            VarInt varint = new VarInt(payload, cursor + offset);
+            cursor += offset + varint.getOriginalSizeInBytes();
+            return varint.value;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ProtocolException(e);
+        }
+    }
+
 }

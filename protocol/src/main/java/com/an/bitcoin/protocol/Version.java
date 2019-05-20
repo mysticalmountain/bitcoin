@@ -31,7 +31,6 @@ public class Version extends Message {
 
     public Version(byte[] payload) throws ProtocolException {
         super(payload);
-        parse();
     }
 
     public Version(byte[] payload, int offset) throws ProtocolException {

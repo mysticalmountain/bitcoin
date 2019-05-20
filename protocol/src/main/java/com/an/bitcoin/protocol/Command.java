@@ -10,4 +10,6 @@ public @interface Command {
 
     public String name();
 
+    public int version() default 0;
+
 }

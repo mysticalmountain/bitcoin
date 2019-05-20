@@ -24,7 +24,6 @@ public class VersionGt106 extends MessageDecorator<Version> {
 
     public VersionGt106(byte[] payload) {
         super(payload);
-        parse();
     }
 
     @Override
