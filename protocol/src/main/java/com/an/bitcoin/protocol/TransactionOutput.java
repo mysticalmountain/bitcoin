@@ -14,7 +14,8 @@ public class TransactionOutput extends ChildMessage {
 
     private long value;
     private long scriptLength;
-    private byte [] scriptBytes;
+    private byte[] scriptBytes;
+    private Script script;
 
     public TransactionOutput() {
     }
@@ -44,6 +45,14 @@ public class TransactionOutput extends ChildMessage {
         return 8
                 + new VarInt(scriptLength).getOriginalSizeInBytes()
                 + scriptBytes.length;
+    }
+
+    public Script getPkScript() {
+        if (script != null) {
+            return script;
+        }
+        script = new Script(scriptBytes);
+        return script;
     }
 
     public long getValue() {

@@ -12,7 +12,9 @@ dependencies {
     compile("org.reflections:reflections:0.9.11")
     compile("org.slf4j:slf4j-log4j12:1.7.25")
     compile("com.google.guava:guava:18.0")
-    compile "com.madgag.spongycastle:core:1.58.0.0"
+    compile "com.madgag.spongycastle:core:1.53.0.0"
+    compile "com.madgag.spongycastle:prov:1.53.0.0"
+    compile "com.google.code.findbugs:jsr305:3.0.2"
 
 
 

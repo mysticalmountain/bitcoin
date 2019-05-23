@@ -16,6 +16,7 @@ public class TransactionInput extends ChildMessage {
     private int scriptLength;
     private byte[] scriptBytes;
     private int sequence;
+    private Script script;
 
     public TransactionInput() {
     }
@@ -45,9 +46,17 @@ public class TransactionInput extends ChildMessage {
     @Override
     public int getLength() {
         return transactionOutPoint.getLength()                              //transactionOutpoint
-                + new VarInt(scriptLength).getOriginalSizeInBytes()     //scriptLength
+                + new VarInt(scriptLength).getOriginalSizeInBytes()         //scriptLength
                 + scriptBytes.length                                        //scriptBytes
                 + 4;                                                        //sequence
+    }
+
+    public Script getScriptSig() {
+        if (script != null) {
+            return script;
+        }
+        script = new Script(scriptBytes);
+        return script;
     }
 
     public boolean isCoinBase() {
