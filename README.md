@@ -40,7 +40,7 @@ P2P网络是bitcoin协议的通讯模型，基于bitcoin的公链性质，任何
 
 
 ### Script and contract
-关于协议内容[https://en.bitcoin.it/wiki/Script](https://en.bitcoin.it/wiki/Script)是一个微型的变成语言，涉及流程控制、堆栈操作、逻辑算法、数据加密等，需要大量的编码，目前正在实现中。
+依据协议内容[https://en.bitcoin.it/wiki/Script](https://en.bitcoin.it/wiki/Script)设计一个基于Stack简单脚本执行器，处理Stack操作，流程控制、字符操作、逻辑操作、算数操作、加密操作等，通过该脚本的执行实现交易权限检查（保证某用户只能花费自己的交易）及简单的智能合约。
 ### Transaction Broadcast
 待实现
 ### Block broadcast and block chain
