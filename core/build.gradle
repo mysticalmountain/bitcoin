@@ -1,0 +1,22 @@
+
+build {
+    doLast {
+        sourceSets*.java.srcDirs*.each { it.mkdirs() }
+        sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+    }
+}
+
+dependencies {
+    //compile
+    compile("org.reflections:reflections:0.9.11")
+    compile("org.slf4j:slf4j-log4j12:1.7.25")
+    compile "com.madgag.spongycastle:core:1.53.0.0"
+    compile "com.madgag.spongycastle:prov:1.53.0.0"
+    compile "com.google.code.findbugs:jsr305:3.0.2"
+//    compile "org.fusesource.leveldbjni:leveldbjni-all:1.8"
+
+    //test compile
+    testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+    testCompile ("junit:junit:4.12")
+}
+
