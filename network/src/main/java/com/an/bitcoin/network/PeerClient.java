@@ -17,13 +17,13 @@ import java.util.concurrent.ExecutionException;
 
 
 /**
- * @ClassName NettyClient
- * @Description NettyClient
+ * @ClassName PeerClient
+ * @Description PeerClient
  * @Author an
  * @Date 2019/4/22 下午5:03
  * @Version 1.0
  */
-public class NettyClient<T extends Channel> extends AbstractExecutionThreadService {
+public class PeerClient extends AbstractExecutionThreadService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private String ip;
@@ -33,12 +33,7 @@ public class NettyClient<T extends Channel> extends AbstractExecutionThreadServi
     private PeerFactory peerFactory;
     private MessageFactory messageFactory;
 
-    public NettyClient(String ip, int port) {
-        this.ip = ip;
-        this.port = port;
-    }
-
-    public NettyClient(PeerFactory peerFactory, MessageFactory messageFactory, String ip, int port) {
+    public PeerClient(PeerFactory peerFactory, MessageFactory messageFactory, String ip, int port) {
         this.peerFactory = peerFactory;
         this.messageFactory = messageFactory;
         peerHandler = new PeerHandler(peerFactory);

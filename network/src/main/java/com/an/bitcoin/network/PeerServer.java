@@ -1,42 +1,49 @@
 package com.an.bitcoin.network;
 
+import com.an.bitcoin.core.Message;
 import com.an.bitcoin.core.MessageFactory;
 import com.an.bitcoin.core.Peer;
 import com.an.bitcoin.core.PeerFactory;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.an.bitcoin.core.Utils.HEX;
 
 /**
- * @ClassName NettyServer
- * @Description NettyServer
+ * @ClassName PeerServer
+ * @Description PeerServer
  * @Author an
  * @Date 2019/4/22 上午9:53
  * @Version 1.0
  */
-public class NettyServer<T extends Channel> extends AbstractExecutionThreadService {
+public class PeerServer extends AbstractExecutionThreadService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private ChannelInitializer<T> channelInitializer;
     private PeerFactory peerFactory;
     private MessageFactory messageFactory;
     private int port;
+    private EventLoopGroup bossGroup = new NioEventLoopGroup();
+    private EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+    private Map<String, ChannelFuture> channelFutures = new HashMap<>();
 
 
-    //TODO use configuration file set netty server setting
-    public NettyServer(ChannelInitializer<T> channelInitializer, int port) {
-        this.channelInitializer = channelInitializer;
-        this.port = port;
-    }
-
-    public NettyServer(PeerFactory peerFactory, MessageFactory messageFactory, int port) {
+    public PeerServer(PeerFactory peerFactory, MessageFactory messageFactory, int port) {
         this.peerFactory = peerFactory;
         this.messageFactory = messageFactory;
         this.port = port;
@@ -45,8 +52,6 @@ public class NettyServer<T extends Channel> extends AbstractExecutionThreadServi
 
     @Override
     protected void run() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
@@ -75,6 +80,72 @@ public class NettyServer<T extends Channel> extends AbstractExecutionThreadServi
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+        }
+    }
+
+    public void stop() {
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
+    }
+
+    public void connect(String hostname, String ip, int port) throws Exception {
+        EventLoopGroup group = new NioEventLoopGroup();
+        Bootstrap bootstrap = new Bootstrap()
+                .group(group)
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast("MessageDecoder", new MessageDecoder(messageFactory));
+                        pipeline.addLast("MessageEncoder", new MessageEncoder());
+                        pipeline.addLast("PeerHandler", new PeerHandler(peerFactory));
+                    }
+                });
+
+        ChannelFuture channelFuture = bootstrap.connect(ip, port).sync();
+        channelFuture.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    logger.info("Connect to {} port {}", ip, port);
+                } else {
+                    logger.error("Connect to {} port {} error", ip, port);
+                }
+            }
+        });
+        channelFutures.put(hostname, channelFuture);
+    }
+
+    public void disConnect(String ip) {
+        ChannelFuture channelFuture = channelFutures.get(ip);
+        logger.info("{} {} ", channelFuture.channel().isOpen(), channelFuture.channel().isActive());
+        channelFuture.channel().disconnect();
+        logger.info("{} {} ", channelFuture.channel().isOpen(), channelFuture.channel().isActive());
+
+    }
+
+    public void send(String hostname, String msg) {
+        ChannelFuture channelFuture = channelFutures.get(hostname);
+        if (channelFuture == null) {
+            logger.error("Hostname {} mapping channel not found", hostname);
+            return;
+        }
+        Channel channel = channelFutures.get(hostname).channel();
+        PeerHandler peerHandler = (PeerHandler) channel.pipeline().get("PeerHandler");
+        ByteArrayInputStream stream = new ByteArrayInputStream(HEX.decode(msg));
+        byte[] headerBytes = new byte[24];
+        try {
+            stream.read(headerBytes);
+            Message.Header header = new Message.Header(headerBytes, true);
+            header.magic = Message.magic;
+            byte[] bodyBytes = new byte[stream.available()];
+            stream.read(bodyBytes);
+            Message message = messageFactory.create(header, bodyBytes);
+            message.setHeader(header);
+            peerHandler.writeMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

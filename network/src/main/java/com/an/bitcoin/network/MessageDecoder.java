@@ -1,7 +1,7 @@
 package com.an.bitcoin.network;
 
-import com.an.bitcoin.protocol.Message;
-import com.an.bitcoin.protocol.MessageFactory;
+import com.an.bitcoin.core.Message;
+import com.an.bitcoin.core.MessageFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -18,6 +18,11 @@ import java.util.List;
 public class MessageDecoder extends ByteToMessageDecoder {
 
     private int cacheTimes = 0;
+    private MessageFactory messageFactory;
+
+    public MessageDecoder(MessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -34,13 +39,14 @@ public class MessageDecoder extends ByteToMessageDecoder {
         }
         in.readBytes(headerBytes, 0, headerBytes.length);
         Message.Header header = new Message.Header(headerBytes);
+        header.magic = Message.magic;
         byte[] commandBytes = new byte[header.getLength()];
         if (in.readableBytes() < commandBytes.length) {
             in.resetReaderIndex();
             return;
         }
         in.readBytes(commandBytes, 0, commandBytes.length);
-        Message message = MessageFactory.create(header, commandBytes);
+        Message message = messageFactory.create(header, commandBytes);
         out.add(message);
     }
 

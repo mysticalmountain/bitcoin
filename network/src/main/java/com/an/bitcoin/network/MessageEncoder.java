@@ -1,6 +1,6 @@
 package com.an.bitcoin.network;
 
-import com.an.bitcoin.protocol.Message;
+import com.an.bitcoin.core.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
