@@ -6,15 +6,13 @@ build {
 }
 
 dependencies {
-    compile project(":protocol")
-
     //compile
+    compile project(":core")
+    compile ("io.netty:netty-all:${nettyVersion}")
     compile("io.netty:netty-all:${nettyVersion}:sources")
     compile("io.netty:netty-all:${nettyVersion}:javadoc")
     compile("com.google.guava:guava:18.0")
     compile("org.slf4j:slf4j-log4j12:1.7.25")
-
-
     compile("org.reflections:reflections:0.9.11")
 
 
