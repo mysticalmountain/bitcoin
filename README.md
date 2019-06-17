@@ -5,13 +5,13 @@
 ## 实现思路
 我的实现思路非常简单，依据bitcoin wiki `https://en.bitcoin.it/wiki/Protocol_documentation`中的协议规范做代码层的实现，目前只实现协议中的核心部分和关键内容，特别严谨的逻辑及步骤后续完善，目前的第一要务是把协议的基础模型构建出来，主要包含如下内容：
 
-### P2P Network
-P2P网络是bitcoin协议的通讯模型，基于bitcoin的公链性质，任何的Peer都可以加入到网络中。我这里采用Netty实现各Peer通讯的接收和发送。
-+ `NettyServer NettyClient` 实现`com.google.common.util.concurrent.Service`接口进行状态管理
-+  `MessageDecoder` extends `io.netty.handler.codec.ByteToMessageDecoder`将接受的byte反序列化为`Message`
-+ `MessageEncoder` extends `io.netty.handler.codec.MessageToByteEncoder`将`Message`序列化为byte
+### core
+[core](architecture/core.jpg)
 
-通过`NettyServer NettyClient`可以与网络中的其他Peer链接，`NettyServer`接收其他Peer的Message（Block, Transaction, Ping ...)，直接丢给对应的Message处理并响应。此处实现了消息接收和处理的解耦。
+### network
+[network](architecture/network.jpg)
+### protocol
+[protocol](architecture/protocol.jpg)
 
 ### Message model
 ```
@@ -46,4 +46,3 @@ P2P网络是bitcoin协议的通讯模型，基于bitcoin的公链性质，任何
 ### Block broadcast and block chain
 待实现
 
-# 参考资料
