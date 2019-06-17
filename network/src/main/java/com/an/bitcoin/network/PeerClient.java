@@ -1,6 +1,8 @@
 package com.an.bitcoin.network;
 
-import com.an.bitcoin.protocol.Message;
+import com.an.bitcoin.core.Message;
+import com.an.bitcoin.core.MessageFactory;
+import com.an.bitcoin.core.PeerFactory;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
@@ -10,6 +12,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -26,11 +30,20 @@ public class NettyClient<T extends Channel> extends AbstractExecutionThreadServi
     private int port;
     private PeerHandler peerHandler;
     private SettableFuture<Void> startedFuture = SettableFuture.create();
+    private PeerFactory peerFactory;
+    private MessageFactory messageFactory;
 
     public NettyClient(String ip, int port) {
         this.ip = ip;
         this.port = port;
-        peerHandler = new PeerHandler();
+    }
+
+    public NettyClient(PeerFactory peerFactory, MessageFactory messageFactory, String ip, int port) {
+        this.peerFactory = peerFactory;
+        this.messageFactory = messageFactory;
+        peerHandler = new PeerHandler(peerFactory);
+        this.ip = ip;
+        this.port = port;
     }
 
     @Override
@@ -43,7 +56,7 @@ public class NettyClient<T extends Channel> extends AbstractExecutionThreadServi
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast("MessageDecoder", new MessageDecoder());
+                        pipeline.addLast("MessageDecoder", new MessageDecoder(messageFactory));
                         pipeline.addLast("MessageEncoder", new MessageEncoder());
                         pipeline.addLast("PeerHandler", peerHandler);
                     }
@@ -54,7 +67,7 @@ public class NettyClient<T extends Channel> extends AbstractExecutionThreadServi
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
-                    logger.info("Netty client start successed, connect to {} port {}", ip, port);
+                    logger.info("Client started, connect to {} port {}", ip, port);
                     startedFuture.set(null);
                 } else {
                     logger.error("Netty client start failed exit");
@@ -64,34 +77,18 @@ public class NettyClient<T extends Channel> extends AbstractExecutionThreadServi
         });
     }
 
-    public void writeMessage(Message message) {
-        peerHandler.writeMessage(message);
+    public SettableFuture<Void> getStartedFuture() {
+        return startedFuture;
     }
 
-    class PeerHandler extends SimpleChannelInboundHandler<Message> {
-
-        private ChannelHandlerContext ctx;
-
-        @Override
-        protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
-            logger.info("receive message {}", msg);
+    public void writeMessage(Message message) {
+        try {
+            startedFuture.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            super.channelActive(ctx);
-            this.ctx = ctx;
-            logger.info("Channel active");
-        }
-
-        public void writeMessage(Message message) {
-            try {
-                startedFuture.get();
-            } catch (Exception e) {
-                logger.error("Unknown exception {}", e);
-            }
-            logger.info("Write message {}", message);
-            ctx.writeAndFlush(message);
-        }
+        peerHandler.writeMessage(message);
     }
 }

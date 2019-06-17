@@ -1,5 +1,7 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Sha256Hash;
+import com.an.bitcoin.core.VarInt;
 import org.junit.Assert;
 import org.junit.Test;
 import org.spongycastle.util.encoders.Hex;
@@ -12,7 +14,7 @@ import java.util.List;
 
 import static com.an.bitcoin.protocol.Block.BLOCK_VERSION_GENESIS;
 import static com.an.bitcoin.protocol.Block.EASIEST_DIFFICULTY_TARGET;
-import static com.an.bitcoin.protocol.Utils.HEX;
+import static com.an.bitcoin.core.Utils.HEX;
 import static java.lang.System.in;
 import static java.lang.System.out;
 

@@ -2,7 +2,7 @@ package com.an.bitcoin.protocol;
 
 import java.io.IOException;
 
-@Command(name = "version")
+//@Command(name = "version")
 public class VersionGt70001 extends MessageDecorator<VersionGt106> {
 
 

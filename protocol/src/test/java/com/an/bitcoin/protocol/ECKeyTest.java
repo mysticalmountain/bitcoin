@@ -1,5 +1,7 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.ECKey;
+import com.an.bitcoin.core.Sha256Hash;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -7,7 +9,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SignatureException;
 
-import static com.an.bitcoin.protocol.Utils.HEX;
+import static com.an.bitcoin.core.Utils.HEX;
 import static java.lang.System.out;
 
 /**

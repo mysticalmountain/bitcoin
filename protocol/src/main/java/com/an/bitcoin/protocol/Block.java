@@ -1,5 +1,10 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Message;
+import com.an.bitcoin.core.Sha256Hash;
+import com.an.bitcoin.core.Utils;
+import com.an.bitcoin.core.VarInt;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -22,7 +27,7 @@ public class Block extends Message {
     private int difficultyTarget;
     private int nonce;
     private int txnCount;
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
 
     private Sha256Hash hash;
 
@@ -198,7 +203,8 @@ public class Block extends Message {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         uint32ToByteStream(version, stream);
         stream.write(prevBlockHash.getReversedBytes());
-        stream.write(getMerkleRootHash().getReversedBytes());
+        stream.write(merkleRootHash.getReversedBytes());
+//        stream.write(getMerkleRootHash().getReversedBytes());
         uint32ToByteStream(time, stream);
         uint32ToByteStream((int) difficultyTarget, stream);
         uint32ToByteStream(nonce, stream);

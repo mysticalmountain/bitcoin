@@ -3,9 +3,6 @@ package com.an.bitcoin.protocol;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
-
-import static com.an.bitcoin.protocol.Message.*;
 import static java.lang.System.out;
 
 /**

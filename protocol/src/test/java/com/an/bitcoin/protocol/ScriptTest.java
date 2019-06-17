@@ -1,5 +1,8 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.ECKey;
+import com.an.bitcoin.core.Sha256Hash;
+import com.an.bitcoin.core.Utils;
 import org.junit.Test;
 
 import static java.lang.System.out;
@@ -73,6 +76,5 @@ public class ScriptTest {
 
     @Test
     public void tmp() {
-        Script script = new Script(null);
     }
 }

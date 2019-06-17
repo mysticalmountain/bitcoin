@@ -10,7 +10,7 @@ import java.io.IOException;
  * @Date 2019/4/18 上午9:09
  * @Version 1.0
  */
-@Command(name = "version")
+//@Command(name = "version")
 public class VersionGt106 extends MessageDecorator<Version> {
 
     public Address addrFrom;

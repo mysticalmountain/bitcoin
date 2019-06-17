@@ -1,14 +1,14 @@
 package com.an.bitcoin.protocol;
 
-import com.sun.jdi.InvocationException;
+import com.an.bitcoin.core.ECKey;
+import com.an.bitcoin.core.Sha256Hash;
+import com.an.bitcoin.core.Utils;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -16,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
-import static com.an.bitcoin.protocol.Utils.HEX;
-import static com.an.bitcoin.protocol.Utils.readInt64;
+import static com.an.bitcoin.core.Utils.HEX;
 
 /**
  * @ClassName Script

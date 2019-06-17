@@ -1,5 +1,7 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.ChildMessage;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

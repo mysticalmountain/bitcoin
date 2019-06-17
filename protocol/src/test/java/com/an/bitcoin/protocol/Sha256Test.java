@@ -1,5 +1,6 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Sha256Hash;
 import org.junit.Test;
 
 import static java.lang.System.out;

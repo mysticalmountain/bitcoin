@@ -1,12 +1,13 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.VarInt;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.an.bitcoin.protocol.Utils.HEX;
+import static com.an.bitcoin.core.Utils.HEX;
 import static java.lang.System.out;
 
 /**

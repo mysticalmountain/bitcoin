@@ -1,5 +1,8 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.ChildMessage;
+import com.an.bitcoin.core.Sha256Hash;
+import com.an.bitcoin.core.VarInt;
 import com.google.common.base.VerifyException;
 
 import java.io.ByteArrayOutputStream;

@@ -1,5 +1,7 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Message;
+
 /**
  * @ClassName MessageDecorator
  * @Description MessageDecorator

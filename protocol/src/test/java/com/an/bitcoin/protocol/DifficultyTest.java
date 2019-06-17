@@ -1,5 +1,6 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Utils;
 import org.junit.Test;
 
 import java.math.BigInteger;

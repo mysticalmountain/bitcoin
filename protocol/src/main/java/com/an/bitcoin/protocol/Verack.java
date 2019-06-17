@@ -1,5 +1,7 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Message;
+
 import java.io.IOException;
 
 /**
@@ -11,6 +13,15 @@ import java.io.IOException;
  */
 @Command(name = "verack")
 public class Verack extends Message {
+
+    public Verack(byte[] payload) {
+        super(payload);
+    }
+
+    public Verack() {
+    }
+
+
     @Override
     public void parse() throws ProtocolException {
 
@@ -39,5 +50,12 @@ public class Verack extends Message {
     @Override
     public boolean support(Header header) {
         return getCommand().equals(header.command);
+    }
+
+    @Override
+    public String toString() {
+        return "Verack{" +
+                "header=" + header +
+                '}';
     }
 }

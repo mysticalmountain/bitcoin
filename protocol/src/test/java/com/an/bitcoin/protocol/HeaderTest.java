@@ -1,5 +1,6 @@
 package com.an.bitcoin.protocol;
 
+import com.an.bitcoin.core.Message;
 import org.junit.Assert;
 import org.junit.Test;
 
