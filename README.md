@@ -15,10 +15,8 @@
 [network](architecture/network.jpg)
 ![alt network][architecture/network.jpg]
 
-### protocol
-[protocol](architecture/protocol.jpg)
-
-![alt protocol][architecture/protocol.jpg]
+### peer
+[peer](https://github.com/mysticalmountain/bitcoin/blob/master/architecture/peer.jpg)
 
 ### Message model
 ```
