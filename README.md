@@ -8,10 +8,17 @@
 ### core
 [core](architecture/core.jpg)
 
+![alt core][architecture/core.jpg]
+
 ### network
+
 [network](architecture/network.jpg)
+![alt network][architecture/network.jpg]
+
 ### protocol
 [protocol](architecture/protocol.jpg)
+
+![alt protocol][architecture/protocol.jpg]
 
 ### Message model
 ```
