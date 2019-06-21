@@ -6,17 +6,17 @@
 我的实现思路非常简单，依据bitcoin wiki `https://en.bitcoin.it/wiki/Protocol_documentation`中的协议规范做代码层的实现，目前只实现协议中的核心部分和关键内容，特别严谨的逻辑及步骤后续完善，目前的第一要务是把协议的基础模型构建出来，主要包含如下内容：
 
 ### core
-[core](architecture/core.jpg)
 
-![alt core][architecture/core.jpg]
+![alt core](https://github.com/mysticalmountain/bitcoin/blob/master/architecture/core.jpg "")
 
 ### network
 
-[network](architecture/network.jpg)
-![alt network][architecture/network.jpg]
+![alt p2p](https://github.com/mysticalmountain/bitcoin/blob/master/architecture/P2P.jpg "")
 
 ### peer
-[peer](https://github.com/mysticalmountain/bitcoin/blob/master/architecture/peer.jpg)
+
+![alt p2p](https://github.com/mysticalmountain/bitcoin/blob/master/architecture/peer.jpg "")
+
 
 ### Message model
 ```
